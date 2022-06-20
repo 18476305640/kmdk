@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style type="text/css">
+        .statement {
+            text-align: center;
+        }
+        .controller {
+            width: 200px;
+            height: 40px;
+            margin: 20px auto;
+        }
+        .controller > button {
+            height: 100%;
+            width: 45%;
+            box-shadow: 5px 5px 3px #888888;
+        }
+        .controller > button:active{
+            height: 100%;
+            width: 45%;
+            box-shadow: 0px 0px 3px #888888;
+        }
+    </style>
+    <script src="js/jquery-3.6.0.js"></script>
+    <script text="text/javascript">
+        $(function() {
+            $("#no").click(function() {
+                console.log("用户不同意");
+                window.close();
+            })
+            $("#ok").click(function() {
+                console.log("用户同意");
+                window.location.href = "/login.html"; //替换可返回
+                //window.location.reload("/login.html"); //替换不可返回
+
+            })
+
+            
+        })
+    </script>
+</head>
+
+<body>
+    <h2 class="statement">声明：欢迎使用打卡服务，如身体出现异常，请立即更新您的打卡状态！</h2>
+    <div class="controller">
+        <button id="ok">同意</button>
+        <button id="no">不同意</button>
+    </div>
+</body>
+
+</html>

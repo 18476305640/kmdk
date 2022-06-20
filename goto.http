@@ -1,0 +1,22 @@
+
+POST http://127.0.0.1:721/goto/update HTTP/1.1
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdHVkZW50X2lkIjoiMTkwNjAyMDExMTEiLCJzdWIiOiJQb2ludCIsImV4cCI6MTY1NTcyNjQ2OCwianRpIjoiMTA4MjIwYjktOTJmZC00NTQ4LTg2NzItNTRkYzI1M2I3MTk5In0.sPqLJ7NcyYdGjfXAZoKs9wxPORNr4ty520uG3468I0o
+Content-Type: application/json
+
+{
+  "location": "广东湛江雷州市",
+  "password": "3333",
+  "status": 0,
+  "studentId": "19060201111",
+  "userSign": "",
+  "whenPoint": "9:22"
+}
+
+###
+GET http://127.0.0.1:721/goto/getStudentDataByStudentId?student_id=19060201111 HTTP/1.1
+Authorization: Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdHVkZW50X2lkIjoiMTkwNjAyMDExMTEiLCJzdWIiOiJQb2ludCIsImV4cCI6MTY1NTcyNjQ2OCwianRpIjoiMTA4MjIwYjktOTJmZC00NTQ4LTg2NzItNTRkYzI1M2I3MTk5In0.sPqLJ7NcyYdGjfXAZoKs9wxPORNr4ty520uG3468I0o
+
+###
+GET http://api.map.baidu.com/geocoder?address=广州市&output=json&key=46254830ac5733886a2aa1d5ec10ebda HTTP/1.1
+
+        

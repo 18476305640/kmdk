@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <script src="js/jquery-3.6.0.js"></script>
+    <style type="text/css">
+        form>div {
+            display: block;
+            width: 40%;
+            margin: 30px auto;
+        }
+
+        .inputText {
+            display: block;
+            width: 100%;
+            height: 50px;
+
+        }
+
+        #student_id {
+            display: inline;
+            margin-right: 20px;
+        }
+    </style>
+    <script type="text/javascript"
+        src="https://webapi.amap.com/maps?v=1.4.15&key=46254830ac5733886a2aa1d5ec10ebda"></script>
+    <script type="module">
+        import { Get, Post } from "/js/netRequest.js";
+        import cookieUtils from "/js/cookie-utils.js";
+        import urlGet from "/js/urlGet.js";
+
+        function IS() {
+            Get("/goto/isHasData", {
+                success(data) {
+                    if (data.data.data.user_sign) {
+                        $("#sign_msg").css({
+                            "color": "#95ec69"
+                        }).text("(云端已存在数据)")
+                    } else {
+                        $("#sign_msg").css({
+                            "color": "red"
+                        }).text("(这是必填项)")
+                    }
+                },
+                error(err) {
+
+                }
+            })
+        }
+        $(function () {
+            let student_id = urlGet("student_id");
+            Get("/goto/getStudentDataByStudentId?student_id=" + student_id, {
+                success(data) {
+                    $("#student_id").text(data.data.studentData.studentId);
+                    if (data.data.studentData.status == 1) {
+                        $("input[name='status']").get(0).checked = true;
+                    } else {
+                        $("input[name='status']").get(1).checked = true;
+                    }
+                    if (data.data.studentData) {
+                        $("input[name='whenPoint']").val(data.data.studentData.whenPoint)
+                    }
+                    if (data.data.studentData.location) {
+                        $("input[name='location']").val(data.data.studentData.location.split("|")[0].trim())
+                    }
+                    //更新云端是否有数据
+                    IS();
+
+                },
+                error(err) {
+
+                }
+            });
+            var obj = document.getElementById('form');
+            obj.onsubmit = function (e) {
+
+                let status = parseInt($("input[name='status']:checked").val());
+                let whenPoint = $("input[name='whenPoint']").val();
+                let userSign = $("textarea[name='userSign']").val();
+                let password = $("input[name='password']").val();
+                let location = $("input[name='location']").val();
+
+                let gip = "https://restapi.amap.com/v3/geocode/geo?address=" + location + "&output=json&key=46254830ac5733886a2aa1d5ec10ebda"
+
+                $.ajax({
+                    type: "get",
+                    url: gip,
+                    success(data) {
+                        let address = data.geocodes[0];
+                        location = address.formatted_address + " | [" + address.location + "]";
+                        console.log(location);
+                        Post("/goto/update", {
+                            data: JSON.stringify({
+                                "location": location,
+                                "password": password,
+                                "status": status,
+                                "studentId": student_id,
+                                "userSign": userSign,
+                                "whenPoint": whenPoint
+
+                            }),
+
+                            success(resources) {
+                                console.log("更新成功", resources);
+                                if (resources.code == 20000) {
+                                    alert(resources.message);
+                                }
+                                window.location.reload();
+
+                            }
+                        });
+
+                    }
+                });
+                return false;
+
+
+
+            }
+            $("#backLogin").bind("click", function (event) {
+                event.preventDefault();
+                window.location.href = "/login.html";
+                
+            });
+            $("#exit").bind("click", function (event) {
+                event.preventDefault();
+                console.log(cookieUtils)
+                cookieUtils.deleteCookie("token");
+                window.location.replace("/login.html");
+                
+            });
+        
+
+            // let f = "https://restapi.amap.com/v3/geocode/geo?address=北京市朝阳区阜通东大街6号&output=json&key=46254830ac5733886a2aa1d5ec10ebda"
+
+            // $.ajax({
+            //     type: "get",
+            //     url: f,
+            //     success(data) {
+            //         console.log(data);
+            //         let v = "https://restapi.amap.com/v3/ip?ip=114.247.50.2&output=json&key=46254830ac5733886a2aa1d5ec10ebda";
+            //         $.ajax({
+            //             type: "get",
+            //             url: v,
+            //             success(vd) {
+            //                 console.log(vd);
+
+            //             }
+            //         });
+            //     }
+            // });
+
+
+            // var map = new AMap.Map('container', {
+            //     resizeEnable: true
+            // });
+            // AMap.plugin('AMap.Geolocation', function () {
+            //     var geolocation = new AMap.Geolocation({
+            //         enableHighAccuracy: true,//是否使用高精度定位，默认:true
+            //         timeout: 10000,          //超过10秒后停止定位，默认：5s
+            //         buttonPosition: 'RB',    //定位按钮的停靠位置
+            //         buttonOffset: new AMap.Pixel(10, 20),//定位按钮与设置的停靠位置的偏移量，默认：Pixel(10, 20)
+            //         zoomToAccuracy: true,   //定位成功后是否自动调整地图视野到定位点
+
+            //     });
+            //     map.addControl(geolocation);
+            //     geolocation.getCurrentPosition(function (status, result) {
+            //         if (status == 'complete') {
+            //             onComplete(result)
+            //         } else {
+            //             onError(result)
+            //         }
+            //     });
+            // });
+            // //解析定位结果
+            // function onComplete(data) {
+            //     let ip = data.position.lng+"."+data.position.lat;
+            //     console.log(ip);
+            //     console.log("114.247.50.2")
+            //     let v = "https://restapi.amap.com/v3/ip?ip="+ip+"&output=json&key=46254830ac5733886a2aa1d5ec10ebda";
+            //     $.ajax({
+            //         type: "get",
+            //         url: v,
+            //         success(vd) {
+            //             console.log(vd);
+
+            //         }
+            //     });
+
+            // }
+            // //解析定位错误信息
+            // function onError(data) {
+            //     console.log("定位失败");
+            // }
+
+
+
+
+        })
+    </script>
+</head>
+
+<body>
+
+
+    <form id="form">
+        <div>
+            当前用户：<span id="student_id" style="color: #7fba00;"></span>
+            <button id="backLogin">返回登录</button>
+            <button id="exit">退出账号</button>
+        </div>
+        <div>
+            打卡状态：
+            开<input type="radio" name="status" value="1" />
+            关<input type="radio" name="status" value="0" />
+        </div>
+        <div>
+            打卡时间：<input type="text" name="whenPoint" placeholder="比如: '8:00' " class="inputText" />
+        </div>
+        <div>
+            打卡地址：<input type="text" name="location" placeholder="比如：广州" class="inputText" />
+        </div>
+        <div>
+            签名识别：<span id="sign_msg"></span> <a href="https://www.cnblogs.com/zhuangjie/p/16393634.html">如何填写下面信息？</a>
+            <br />
+            <textarea rows="10" cols="35" name="userSign" placeholder="为空，表示不修改" class="inputText"></textarea>
+        </div>
+        <div>
+            更新口令：<input type="password" name="password" placeholder="为空，表示不修改" class="inputText" />
+        </div>
+        <div>
+            <input type="submit" value="提交修改" class="inputText">
+        </div>
+
+
+
+
+
+
+    </form>
+</body>
+
+</html>

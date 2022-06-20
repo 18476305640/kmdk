@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style type="text/css">
+        body {
+            background-color: #e5a5c2;
+        }
+
+        .form {
+            display: block;
+        }
+
+        .form>* {
+            display: block;
+            margin: 20px auto;
+
+        }
+    </style>
+    <script src="js/jquery-3.6.0.js"></script>
+    <script type="module">
+        import { Get, Post } from "/js/netRequest.js";
+        import cookieUtils from "/js/cookie-utils.js";
+        $(function () {
+
+
+            $("#submit").click(function () {
+                let student_id = $("#student_id").val()
+                let password = $("#password").val()
+                Post("/goto/login?student_id=" + student_id + "&password=" + password, {
+                    data: {},
+                    success(data) {
+                        if (data.code == 20001) {
+                            console.log("密码错误");
+                            $("#msg").text("账号或密码错误")
+
+                        } else {
+                            console.log("登录成功");
+                            //对token进行持久化,(key,value,day,path,domain)
+                            cookieUtils.addCookie("token", data.data.token, 3);
+                            window.location.replace("/service.html?student_id=" + student_id);
+
+                        }
+                    },
+                    error(err) {
+
+                    }
+                });
+
+                
+
+
+            })
+
+
+        })
+    </script>
+</head>
+
+<body>
+    <h2 style="text-align: center;" id="title">登录页面</h2>
+
+
+    <fieldset id="login">
+        <legend>科贸打卡</legend>
+        科贸学号:<br>
+        <input type="text" name="student_id" value="" id="student_id">
+        <br>
+        登入口令:<br>
+        <input type="password" name="password" value="" id="password">
+        <br />
+        <span id="msg" style="color: red;"></span>
+        <br />
+        <button id="submit">登入/注册</button>
+    </fieldset>
+
+    <!-- <fieldset id="update" style="display: none;">
+        <legend>更新</legend>
+
+        <button id="update">更新信息</button>
+    </fieldset> -->
+
+
+</body>
+
+</html>
