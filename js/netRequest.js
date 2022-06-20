@@ -15,11 +15,12 @@ let token = (function () {
     }
     return token;
 })();
+let baseUrl = "http://127.0.0.1:721";
 //导入另一个js
 import './jquery-3.6.0.js'
 export function Get(url,x) {
     $.ajax({
-        url: "http://127.0.0.1:721"+url,
+        url: baseUrl+url,
         type: "get",
         headers: {
             Authorization: "Bearer "+token
@@ -30,7 +31,7 @@ export function Get(url,x) {
 }
 export function Post(url,x) {
     $.ajax({
-        url: "http://127.0.0.1:721"+url,
+        url: baseUrl+url,
         type: "post",
         contentType: "application/json; charset=utf-8",
         dataType: "json",
